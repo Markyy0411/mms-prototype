@@ -1,22 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Data Management (Local Storage) ---
-    // Initialize default data if empty
-    if (!localStorage.getItem('mms_tickets')) {
-        const defaultTickets = [
-            { id: 'TKT-1001', category: 'Electrical', location: 'IT Bldg, Rm 304', status: 'Pending', date: '2023-11-20', author: 'student@baliuagu.edu.ph' },
-            { id: 'TKT-1002', category: 'Plumbing', location: 'Main Bldg, CR 1', status: 'Resolved', date: '2023-11-18', author: 'mark@baliuagu.edu.ph' },
-            { id: 'TKT-1003', category: 'IT / Network', location: 'Library', status: 'Pending', date: '2023-11-21', author: 'student@baliuagu.edu.ph' }
-        ];
-        localStorage.setItem('mms_tickets', JSON.stringify(defaultTickets));
-    }
-
-    let tickets = JSON.parse(localStorage.getItem('mms_tickets'));
-    
-    // Helper to save tickets
-    const saveTickets = () => {
-        localStorage.setItem('mms_tickets', JSON.stringify(tickets));
-    };
-
     // ==========================================
     // LOGIN PAGE LOGIC
     // ==========================================
@@ -56,6 +38,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const currentUser = JSON.parse(userJson);
 
+    // --- Data Management (Local Storage) ---
+    if (!localStorage.getItem('mms_tickets')) {
+        const defaultTickets = [
+            { id: 'TKT-1001', priority: 'Medium', category: 'Electrical', location: 'IT Bldg, Rm 304', status: 'Pending', date: '2023-11-20', author: 'student@baliuagu.edu.ph' },
+            { id: 'TKT-1002', priority: 'Urgent', category: 'Plumbing', location: 'Main Bldg, CR 1', status: 'Resolved', date: '2023-11-18', author: 'mark@baliuagu.edu.ph' },
+            { id: 'TKT-1003', priority: 'Low', category: 'IT / Network', location: 'Library', status: 'Pending', date: '2023-11-21', author: 'student@baliuagu.edu.ph' }
+        ];
+        localStorage.setItem('mms_tickets', JSON.stringify(defaultTickets));
+    }
+
+    let tickets = JSON.parse(localStorage.getItem('mms_tickets'));
+    const saveTickets = () => localStorage.setItem('mms_tickets', JSON.stringify(tickets));
+
     // --- DOM Elements ---
     const btnNewRequest = document.getElementById('btnNewRequest');
     const navReportIssue = document.getElementById('navReportIssue');
@@ -65,6 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const reportForm = document.getElementById('reportForm');
     const fileUpload = document.querySelector('.file-upload');
     const fileInput = document.getElementById('attachment');
+    
+    const searchInput = document.getElementById('searchInput');
+    const toast = document.getElementById('toast');
 
     const statTotal = document.getElementById('statTotal');
     const statPending = document.getElementById('statPending');
@@ -74,26 +72,72 @@ document.addEventListener('DOMContentLoaded', () => {
     const actionHeader = document.getElementById('actionHeader');
 
     // --- Role-Based Setup ---
-    let visibleTickets = [];
-
+    let myTickets = [];
     if (currentUser.role === 'admin') {
         welcomeName.textContent = 'Admin';
-        btnNewRequest.style.display = 'none'; // Admins don't report
+        btnNewRequest.style.display = 'none';
         if(navReportIssue) navReportIssue.parentElement.style.display = 'none';
-        actionHeader.style.display = 'table-cell'; // Show action column
-        visibleTickets = tickets; // Admins see all
+        actionHeader.style.display = 'table-cell';
+        myTickets = tickets;
     } else {
-        // User Role
-        welcomeName.textContent = currentUser.email.split('@')[0]; // Simple name extract
+        welcomeName.textContent = currentUser.email.split('@')[0];
         actionHeader.style.display = 'none';
-        visibleTickets = tickets.filter(t => t.author === currentUser.email); // Users see their own
+        myTickets = tickets.filter(t => t.author === currentUser.email);
     }
+
+    let visibleTickets = [...myTickets];
+
+    // --- Advanced Features ---
+    let issueChartInstance = null;
+
+    const showToast = (message) => {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    };
+
+    const updateChart = () => {
+        const ctx = document.getElementById('issueChart');
+        if (!ctx) return;
+
+        // Aggregate data
+        const categoryCounts = {};
+        myTickets.forEach(t => {
+            categoryCounts[t.category] = (categoryCounts[t.category] || 0) + 1;
+        });
+
+        const labels = Object.keys(categoryCounts);
+        const data = Object.values(categoryCounts);
+
+        if (issueChartInstance) {
+            issueChartInstance.destroy();
+        }
+
+        issueChartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: ['#005a30', '#f4c430', '#f39c12', '#3498db', '#95a5a6'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right' }
+                }
+            }
+        });
+    };
 
     // --- Functions ---
     const updateStats = () => {
-        statTotal.textContent = visibleTickets.length;
-        statPending.textContent = visibleTickets.filter(t => t.status === 'Pending').length;
-        statResolved.textContent = visibleTickets.filter(t => t.status === 'Resolved').length;
+        statTotal.textContent = myTickets.length;
+        statPending.textContent = myTickets.filter(t => t.status === 'Pending').length;
+        statResolved.textContent = myTickets.filter(t => t.status === 'Resolved').length;
     };
 
     const renderTable = () => {
@@ -103,16 +147,19 @@ document.addEventListener('DOMContentLoaded', () => {
         sortedTickets.forEach(ticket => {
             const tr = document.createElement('tr');
             
-            // Basic columns
+            // Priority badge logic
+            const pClass = ticket.priority ? ticket.priority.toLowerCase() : 'medium';
+            const priorityBadge = `<span class="badge ${pClass}">${ticket.priority || 'Medium'}</span>`;
+
             let html = `
                 <td class="ticket-id">${ticket.id}</td>
+                <td>${priorityBadge}</td>
                 <td>${ticket.category}</td>
                 <td>${ticket.location}</td>
                 <td><span class="badge ${ticket.status.toLowerCase()}">${ticket.status}</span></td>
                 <td>${ticket.date}</td>
             `;
             
-            // Admin Action column
             if (currentUser.role === 'admin') {
                 const isPending = ticket.status === 'Pending';
                 html += `
@@ -127,18 +174,25 @@ document.addEventListener('DOMContentLoaded', () => {
             tr.innerHTML = html;
             ticketTableBody.appendChild(tr);
         });
+        
         updateStats();
+        updateChart();
     };
 
-    // Global function for the inline onclick handler
+    // Global function for onclick handler
     window.resolveTicket = (ticketId) => {
         const ticketIndex = tickets.findIndex(t => t.id === ticketId);
         if (ticketIndex > -1) {
             tickets[ticketIndex].status = 'Resolved';
             saveTickets();
-            // Re-filter for admin
-            visibleTickets = tickets;
+            
+            myTickets = currentUser.role === 'admin' ? tickets : tickets.filter(t => t.author === currentUser.email);
+            // Re-apply search filter if any
+            const searchTerm = searchInput.value.toLowerCase();
+            visibleTickets = myTickets.filter(t => t.location.toLowerCase().includes(searchTerm) || t.category.toLowerCase().includes(searchTerm));
+            
             renderTable();
+            showToast('✅ Ticket marked as Resolved!');
         }
     };
 
@@ -148,7 +202,21 @@ document.addEventListener('DOMContentLoaded', () => {
         reportForm.reset();
     };
 
-    // --- Event Listeners (Only for Users) ---
+    // --- Search Logic ---
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            visibleTickets = myTickets.filter(ticket => 
+                ticket.location.toLowerCase().includes(term) || 
+                ticket.category.toLowerCase().includes(term) ||
+                ticket.id.toLowerCase().includes(term) ||
+                (ticket.priority && ticket.priority.toLowerCase().includes(term))
+            );
+            renderTable();
+        });
+    }
+
+    // --- Event Listeners ---
     if (currentUser.role === 'user') {
         btnNewRequest.addEventListener('click', openModal);
         if (navReportIssue) {
@@ -176,6 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const category = document.getElementById('category').value;
             const location = document.getElementById('location').value;
+            const priority = document.getElementById('priority') ? document.getElementById('priority').value : 'Medium';
             
             const newIdNum = tickets.length > 0 ? parseInt(tickets[tickets.length - 1].id.split('-')[1]) + 1 : 1001;
             const newId = `TKT-${newIdNum}`;
@@ -183,30 +252,31 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const newTicket = {
                 id: newId,
+                priority: priority,
                 category: category,
                 location: location,
                 status: 'Pending',
                 date: today,
-                author: currentUser.email // Link to user
+                author: currentUser.email
             };
             
             tickets.push(newTicket);
             saveTickets();
             
-            // Update visible tickets for the user
-            visibleTickets = tickets.filter(t => t.author === currentUser.email);
+            myTickets = tickets.filter(t => t.author === currentUser.email);
+            visibleTickets = [...myTickets]; // reset search
+            if(searchInput) searchInput.value = '';
             
             renderTable();
             hideModal();
+            showToast('🚀 Ticket successfully reported!');
         });
     }
 
-    // Logout handling
     const logoutBtn = document.querySelector('.logout');
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', (e) => {
+        logoutBtn.addEventListener('click', () => {
             localStorage.removeItem('mms_currentUser');
-            // Allow default navigation to index.html
         });
     }
 

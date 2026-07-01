@@ -550,3 +550,98 @@ select.input-field {
     opacity: 0.5;
     transform: none;
 }
+
+/* =========================================
+   ADVANCED FEATURES
+   ========================================= */
+
+.dashboard-top-section {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.stats-cards {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 0;
+}
+
+.chart-section {
+    flex: 1;
+    min-width: 300px;
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-height: 250px;
+}
+
+.ticket-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.ticket-section-header h2 {
+    margin-bottom: 0;
+}
+
+.search-container {
+    flex: 1;
+    max-width: 300px;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    background: #fafafa;
+    transition: var(--transition);
+}
+
+.search-container input:focus {
+    border-color: var(--bu-green);
+    background: white;
+}
+
+/* Priority Badges */
+.badge.low { background-color: #f1f5f9; color: #64748b; }
+.badge.medium { background-color: #fef0d9; color: #d68100; }
+.badge.urgent { background-color: #fee2e2; color: #ef4444; }
+
+/* Toast Notification */
+.toast {
+    position: fixed;
+    bottom: -100px;
+    right: 20px;
+    background: #1a1f1c;
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    font-weight: 500;
+    transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toast.show {
+    bottom: 30px;
+}
