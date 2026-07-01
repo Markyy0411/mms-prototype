@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | MMS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <img src="../51a6e86a-8647-41a8-a63f-439f5c142b8d.jpg" alt="MMS Logo" class="sidebar-logo" onerror="this.src='https://via.placeholder.com/150'">
+            <h3>MMS Portal</h3>
+        </div>
+        <ul class="nav-links">
+            <li class="active"><a href="#">Dashboard</a></li>
+            <li><a href="#" id="navReportIssue">Report Issue</a></li>
+            <li><a href="#">My Tickets</a></li>
+            <li><a href="index.html" class="logout">Logout</a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header class="top-nav">
+            <h1>Welcome, Student</h1>
+            <button class="btn-add" id="btnNewRequest">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                New Request
+            </button>
+        </header>
+
+        <section class="stats-cards">
+            <div class="card card-total">
+                <h3>Total Tickets</h3>
+                <p class="stat" id="statTotal">0</p>
+            </div>
+            <div class="card card-pending">
+                <h3>Pending</h3>
+                <p class="stat pending" id="statPending">0</p>
+            </div>
+            <div class="card card-resolved">
+                <h3>Resolved</h3>
+                <p class="stat resolved" id="statResolved">0</p>
+            </div>
+        </section>
+
+        <section class="ticket-section">
+            <h2>Recent Maintenance Requests</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ticket ID</th>
+                        <th>Issue Category</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Date Reported</th>
+                    </tr>
+                </thead>
+                <tbody id="ticketTableBody">
+                    <!-- Tickets will be injected here by app.js -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <!-- Report Issue Modal -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Report an Issue</h2>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            <form id="reportForm">
+                <div class="input-group">
+                    <label for="category">Issue Category</label>
+                    <select id="category" class="input-field" required>
+                        <option value="" disabled selected>Select category...</option>
+                        <option value="Plumbing">Plumbing</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="IT / Network">IT / Network</option>
+                        <option value="Carpentry">Carpentry</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="location">Location (Building & Room)</label>
+                    <input type="text" id="location" class="input-field" placeholder="e.g., IT Bldg, Room 304" required>
+                </div>
+                <div class="input-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" class="input-field" placeholder="Please describe the issue in detail..." required></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Attachment (Optional)</label>
+                    <div class="file-upload">
+                        <p style="color: #64746b; font-size: 0.9rem;">Drag & drop image/video here or click to browse</p>
+                        <input type="file" id="attachment" style="display: none;" accept="image/*,video/*">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="cancelModal">Cancel</button>
+                    <button type="submit" class="btn-primary" style="flex: 2;">Submit Ticket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
