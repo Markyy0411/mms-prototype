@@ -527,3 +527,26 @@ select.input-field {
     from { opacity: 0; }
     to { opacity: 1; }
 }
+
+.btn-resolve {
+    background-color: var(--bu-green);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-resolve:hover {
+    background-color: var(--bu-green-dark);
+    transform: translateY(-1px);
+}
+.btn-resolve:disabled {
+    background-color: var(--text-secondary);
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none;
+}
