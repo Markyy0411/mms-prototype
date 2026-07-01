@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | MMS</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="dashboard-body">
     <nav class="sidebar">
         <div class="sidebar-header">
-            <img src="../51a6e86a-8647-41a8-a63f-439f5c142b8d.jpg" alt="MMS Logo" class="sidebar-logo" onerror="this.src='https://via.placeholder.com/150'">
+            <!-- Updated Logo Path -->
+            <img src="logo.png" alt="MMS Logo" class="sidebar-logo" onerror="this.src='https://via.placeholder.com/150?text=MMS+Logo'">
             <h3>MMS Portal</h3>
         </div>
         <ul class="nav-links">
@@ -29,27 +32,41 @@
             </button>
         </header>
 
-        <section class="stats-cards">
-            <div class="card card-total">
-                <h3>Total Tickets</h3>
-                <p class="stat" id="statTotal">0</p>
-            </div>
-            <div class="card card-pending">
-                <h3>Pending</h3>
-                <p class="stat pending" id="statPending">0</p>
-            </div>
-            <div class="card card-resolved">
-                <h3>Resolved</h3>
-                <p class="stat resolved" id="statResolved">0</p>
-            </div>
-        </section>
+        <!-- Analytics and Stats -->
+        <div class="dashboard-top-section">
+            <section class="stats-cards">
+                <div class="card card-total">
+                    <h3>Total Tickets</h3>
+                    <p class="stat" id="statTotal">0</p>
+                </div>
+                <div class="card card-pending">
+                    <h3>Pending</h3>
+                    <p class="stat pending" id="statPending">0</p>
+                </div>
+                <div class="card card-resolved">
+                    <h3>Resolved</h3>
+                    <p class="stat resolved" id="statResolved">0</p>
+                </div>
+            </section>
+            
+            <section class="chart-section">
+                <canvas id="issueChart"></canvas>
+            </section>
+        </div>
 
         <section class="ticket-section">
-            <h2>Recent Maintenance Requests</h2>
+            <div class="ticket-section-header">
+                <h2>Recent Maintenance Requests</h2>
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="input-field" placeholder="Search tickets (e.g. IT Bldg)...">
+                </div>
+            </div>
             <table>
                 <thead>
                     <tr>
                         <th>Ticket ID</th>
+                        <th>Priority</th>
                         <th>Issue Category</th>
                         <th>Location</th>
                         <th>Status</th>
@@ -72,6 +89,14 @@
                 <button class="close-btn" id="closeModal">&times;</button>
             </div>
             <form id="reportForm">
+                <div class="input-group">
+                    <label for="priority">Priority Level</label>
+                    <select id="priority" class="input-field" required>
+                        <option value="Low">Low</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="Urgent">Urgent</option>
+                    </select>
+                </div>
                 <div class="input-group">
                     <label for="category">Issue Category</label>
                     <select id="category" class="input-field" required>
@@ -105,6 +130,9 @@
             </form>
         </div>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Notification Message</div>
 
     <script src="app.js"></script>
 </body>
