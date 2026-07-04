@@ -16,9 +16,12 @@
             <h3>MMS Portal</h3>
         </div>
         <ul class="nav-links">
-            <li class="active"><a href="#">Dashboard</a></li>
-            <li><a href="#" id="navReportIssue">Report Issue</a></li>
-            <li><a href="#">My Tickets</a></li>
+            <li class="active" id="liDashboard"><a href="#" id="navDashboard">Dashboard</a></li>
+            <li id="liNewRequest" style="display:none;"><a href="#" id="navNewRequest">New Request</a></li>
+            <li id="liMyRequests" style="display:none;"><a href="#" id="navMyRequests">My Requests</a></li>
+            <li id="liPendingRequests" style="display:none;"><a href="#" id="navPendingRequests">Pending Requests</a></li>
+            <li id="liRequestsLogs" style="display:none;"><a href="#" id="navRequestsLogs">Requests Logs</a></li>
+            <li id="liSettings"><a href="#" id="navSettings">Settings</a></li>
             <li><a href="index.html" class="logout">Logout</a></li>
         </ul>
     </nav>
@@ -33,7 +36,7 @@
         </header>
 
         <!-- Analytics and Stats -->
-        <div class="dashboard-top-section">
+        <div class="dashboard-top-section" id="dashboardTopSection">
             <section class="stats-cards">
                 <div class="card card-total">
                     <h3>Total Tickets</h3>
@@ -54,9 +57,9 @@
             </section>
         </div>
 
-        <section class="ticket-section">
+        <section class="ticket-section" id="ticketSection">
             <div class="ticket-section-header">
-                <h2>Recent Maintenance Requests</h2>
+                <h2 id="ticketSectionTitle">Recent Maintenance Requests</h2>
                 <!-- Search Bar -->
                 <div class="search-container">
                     <input type="text" id="searchInput" class="input-field" placeholder="Search tickets (e.g. IT Bldg)...">
@@ -78,6 +81,18 @@
                     <!-- Tickets will be injected here by app.js -->
                 </tbody>
             </table>
+        </section>
+
+        <!-- Settings Section -->
+        <section class="ticket-section" id="settingsSection" style="display: none;">
+            <div class="ticket-section-header">
+                <h2>Profile Settings</h2>
+            </div>
+            <div class="card" style="max-width: 500px;">
+                <h3 style="color: var(--bu-green);">Account Information</h3>
+                <p style="margin-top: 15px; font-size: 1.1rem;"><strong>Email:</strong> <span id="profileEmail"></span></p>
+                <p style="margin-top: 10px; font-size: 1.1rem;"><strong>Role:</strong> <span id="profileRole"></span></p>
+            </div>
         </section>
     </main>
 

@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('email').value.trim().toLowerCase();
             
             // Determine Role
-            let role = 'user';
-            if (email === 'admin@baliuagu.edu.ph') {
-                role = 'admin';
+            let role = 'requester';
+            if (email === 'fms@baliuagu.edu.ph') {
+                role = 'fms';
             }
             
             // Save current user session
@@ -41,9 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Data Management (Local Storage) ---
     if (!localStorage.getItem('mms_tickets')) {
         const defaultTickets = [
-            { id: 'TKT-1001', priority: 'Medium', category: 'Electrical', location: 'IT Bldg, Rm 304', status: 'Pending', date: '2023-11-20', author: 'student@baliuagu.edu.ph' },
+            { id: 'TKT-1001', priority: 'Medium', category: 'Electrical', location: 'IT Bldg, Rm 304', status: 'Pending', date: '2023-11-20', author: 'requester@baliuagu.edu.ph' },
             { id: 'TKT-1002', priority: 'Urgent', category: 'Plumbing', location: 'Main Bldg, CR 1', status: 'Resolved', date: '2023-11-18', author: 'mark@baliuagu.edu.ph' },
-            { id: 'TKT-1003', priority: 'Low', category: 'IT / Network', location: 'Library', status: 'Pending', date: '2023-11-21', author: 'student@baliuagu.edu.ph' }
+            { id: 'TKT-1003', priority: 'Low', category: 'IT / Network', location: 'Library', status: 'Pending', date: '2023-11-21', author: 'requester@baliuagu.edu.ph' }
         ];
         localStorage.setItem('mms_tickets', JSON.stringify(defaultTickets));
     }
@@ -53,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- DOM Elements ---
     const btnNewRequest = document.getElementById('btnNewRequest');
-    const navReportIssue = document.getElementById('navReportIssue');
     const modal = document.getElementById('reportModal');
     const closeModal = document.getElementById('closeModal');
     const cancelModal = document.getElementById('cancelModal');
@@ -71,21 +70,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const welcomeName = document.getElementById('welcomeName');
     const actionHeader = document.getElementById('actionHeader');
 
+    // Section Elements for SPA Routing
+    const dashboardTopSection = document.getElementById('dashboardTopSection');
+    const ticketSection = document.getElementById('ticketSection');
+    const settingsSection = document.getElementById('settingsSection');
+    const ticketSectionTitle = document.getElementById('ticketSectionTitle');
+
+    // Nav Links
+    const navDashboard = document.getElementById('navDashboard');
+    const navNewRequest = document.getElementById('navNewRequest');
+    const navMyRequests = document.getElementById('navMyRequests');
+    const navPendingRequests = document.getElementById('navPendingRequests');
+    const navRequestsLogs = document.getElementById('navRequestsLogs');
+    const navSettings = document.getElementById('navSettings');
+
     // --- Role-Based Setup ---
     let myTickets = [];
-    if (currentUser.role === 'admin') {
-        welcomeName.textContent = 'Admin';
+    if (currentUser.role === 'fms') {
+        welcomeName.textContent = 'FMS';
         btnNewRequest.style.display = 'none';
-        if(navReportIssue) navReportIssue.parentElement.style.display = 'none';
         actionHeader.style.display = 'table-cell';
         myTickets = tickets;
+
+        // Show FMS Sidebar Links
+        document.getElementById('liPendingRequests').style.display = 'block';
+        document.getElementById('liRequestsLogs').style.display = 'block';
     } else {
         welcomeName.textContent = currentUser.email.split('@')[0];
         actionHeader.style.display = 'none';
         myTickets = tickets.filter(t => t.author === currentUser.email);
+
+        // Show Requester Sidebar Links
+        document.getElementById('liNewRequest').style.display = 'block';
+        document.getElementById('liMyRequests').style.display = 'block';
     }
 
+    // Default visible tickets
     let visibleTickets = [...myTickets];
+    let currentView = 'Dashboard';
 
     // --- Advanced Features ---
     let issueChartInstance = null;
@@ -100,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = document.getElementById('issueChart');
         if (!ctx) return;
 
-        // Aggregate data
+        // Aggregate data based on myTickets (all relevant tickets for the role)
         const categoryCounts = {};
         myTickets.forEach(t => {
             categoryCounts[t.category] = (categoryCounts[t.category] || 0) + 1;
@@ -144,39 +166,110 @@ document.addEventListener('DOMContentLoaded', () => {
         ticketTableBody.innerHTML = '';
         const sortedTickets = [...visibleTickets].reverse(); // Newest first
         
-        sortedTickets.forEach(ticket => {
+        if (sortedTickets.length === 0) {
             const tr = document.createElement('tr');
-            
-            // Priority badge logic
-            const pClass = ticket.priority ? ticket.priority.toLowerCase() : 'medium';
-            const priorityBadge = `<span class="badge ${pClass}">${ticket.priority || 'Medium'}</span>`;
-
-            let html = `
-                <td class="ticket-id">${ticket.id}</td>
-                <td>${priorityBadge}</td>
-                <td>${ticket.category}</td>
-                <td>${ticket.location}</td>
-                <td><span class="badge ${ticket.status.toLowerCase()}">${ticket.status}</span></td>
-                <td>${ticket.date}</td>
-            `;
-            
-            if (currentUser.role === 'admin') {
-                const isPending = ticket.status === 'Pending';
-                html += `
-                    <td>
-                        <button class="btn-resolve" onclick="resolveTicket('${ticket.id}')" ${!isPending ? 'disabled' : ''}>
-                            ${isPending ? 'Resolve' : 'Done'}
-                        </button>
-                    </td>
-                `;
-            }
-            
-            tr.innerHTML = html;
+            tr.innerHTML = `<td colspan="${currentUser.role === 'fms' ? 7 : 6}" style="text-align: center; color: #64746b; padding: 20px;">No tickets found.</td>`;
             ticketTableBody.appendChild(tr);
-        });
+        } else {
+            sortedTickets.forEach(ticket => {
+                const tr = document.createElement('tr');
+                
+                // Priority badge logic
+                const pClass = ticket.priority ? ticket.priority.toLowerCase() : 'medium';
+                const priorityBadge = `<span class="badge ${pClass}">${ticket.priority || 'Medium'}</span>`;
+
+                let html = `
+                    <td class="ticket-id">${ticket.id}</td>
+                    <td>${priorityBadge}</td>
+                    <td>${ticket.category}</td>
+                    <td>${ticket.location}</td>
+                    <td><span class="badge ${ticket.status.toLowerCase()}">${ticket.status}</span></td>
+                    <td>${ticket.date}</td>
+                `;
+                
+                if (currentUser.role === 'fms') {
+                    const isPending = ticket.status === 'Pending';
+                    html += `
+                        <td>
+                            <button class="btn-resolve" onclick="resolveTicket('${ticket.id}')" ${!isPending ? 'disabled' : ''}>
+                                ${isPending ? 'Resolve' : 'Done'}
+                            </button>
+                        </td>
+                    `;
+                }
+                
+                tr.innerHTML = html;
+                ticketTableBody.appendChild(tr);
+            });
+        }
         
         updateStats();
         updateChart();
+    };
+
+    // --- SPA View Routing Logic ---
+    const navLinksList = document.querySelectorAll('.nav-links li');
+    const setActiveNav = (liId) => {
+        navLinksList.forEach(li => li.classList.remove('active'));
+        const li = document.getElementById(liId);
+        if (li) li.classList.add('active');
+    };
+
+    const switchView = (viewName) => {
+        currentView = viewName;
+        if (searchInput) searchInput.value = ''; // Reset Search
+
+        if (viewName === 'Dashboard') {
+            dashboardTopSection.style.display = 'flex';
+            ticketSection.style.display = 'block';
+            settingsSection.style.display = 'none';
+            setActiveNav('liDashboard');
+            
+            if (currentUser.role === 'fms') {
+                ticketSectionTitle.textContent = 'High Priority Requests (Urgent)';
+                visibleTickets = myTickets.filter(t => t.priority === 'Urgent');
+            } else {
+                ticketSectionTitle.textContent = 'Recent Maintenance Requests';
+                visibleTickets = [...myTickets];
+            }
+        } 
+        else if (viewName === 'MyRequests') {
+            dashboardTopSection.style.display = 'none';
+            ticketSection.style.display = 'block';
+            settingsSection.style.display = 'none';
+            setActiveNav('liMyRequests');
+            ticketSectionTitle.textContent = 'My Sent Requests';
+            visibleTickets = [...myTickets];
+        } 
+        else if (viewName === 'PendingRequests') {
+            dashboardTopSection.style.display = 'none';
+            ticketSection.style.display = 'block';
+            settingsSection.style.display = 'none';
+            setActiveNav('liPendingRequests');
+            ticketSectionTitle.textContent = 'Pending Requests (Action Required)';
+            visibleTickets = myTickets.filter(t => t.status === 'Pending');
+        } 
+        else if (viewName === 'RequestsLogs') {
+            dashboardTopSection.style.display = 'none';
+            ticketSection.style.display = 'block';
+            settingsSection.style.display = 'none';
+            setActiveNav('liRequestsLogs');
+            ticketSectionTitle.textContent = 'All Requests Logs';
+            visibleTickets = [...myTickets];
+        } 
+        else if (viewName === 'Settings') {
+            dashboardTopSection.style.display = 'none';
+            ticketSection.style.display = 'none';
+            settingsSection.style.display = 'block';
+            setActiveNav('liSettings');
+            
+            document.getElementById('profileEmail').textContent = currentUser.email;
+            document.getElementById('profileRole').textContent = currentUser.role === 'fms' ? 'Facility Maintenance Service (FMS)' : 'Requester';
+        }
+        
+        if (viewName !== 'Settings') {
+            renderTable();
+        }
     };
 
     // Global function for onclick handler
@@ -186,12 +279,18 @@ document.addEventListener('DOMContentLoaded', () => {
             tickets[ticketIndex].status = 'Resolved';
             saveTickets();
             
-            myTickets = currentUser.role === 'admin' ? tickets : tickets.filter(t => t.author === currentUser.email);
-            // Re-apply search filter if any
-            const searchTerm = searchInput.value.toLowerCase();
-            visibleTickets = myTickets.filter(t => t.location.toLowerCase().includes(searchTerm) || t.category.toLowerCase().includes(searchTerm));
+            myTickets = currentUser.role === 'fms' ? tickets : tickets.filter(t => t.author === currentUser.email);
             
-            renderTable();
+            // Re-apply current view filter
+            switchView(currentView);
+            
+            // Apply search term if any
+            const searchTerm = searchInput.value.toLowerCase();
+            if(searchTerm) {
+                 visibleTickets = visibleTickets.filter(t => t.location.toLowerCase().includes(searchTerm) || t.category.toLowerCase().includes(searchTerm));
+                 renderTable();
+            }
+            
             showToast('✅ Ticket marked as Resolved!');
         }
     };
@@ -206,7 +305,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const term = e.target.value.toLowerCase();
-            visibleTickets = myTickets.filter(ticket => 
+            
+            // First apply the base filter of the current view
+            let baseTickets = [];
+            if (currentView === 'PendingRequests') baseTickets = myTickets.filter(t => t.status === 'Pending');
+            else if (currentView === 'Dashboard' && currentUser.role === 'fms') baseTickets = myTickets.filter(t => t.priority === 'Urgent');
+            else baseTickets = [...myTickets];
+
+            visibleTickets = baseTickets.filter(ticket => 
                 ticket.location.toLowerCase().includes(term) || 
                 ticket.category.toLowerCase().includes(term) ||
                 ticket.id.toLowerCase().includes(term) ||
@@ -216,11 +322,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Event Listeners ---
-    if (currentUser.role === 'user') {
+    // --- Sidebar Navigation Event Listeners ---
+    if (navDashboard) navDashboard.addEventListener('click', (e) => { e.preventDefault(); switchView('Dashboard'); });
+    if (navMyRequests) navMyRequests.addEventListener('click', (e) => { e.preventDefault(); switchView('MyRequests'); });
+    if (navPendingRequests) navPendingRequests.addEventListener('click', (e) => { e.preventDefault(); switchView('PendingRequests'); });
+    if (navRequestsLogs) navRequestsLogs.addEventListener('click', (e) => { e.preventDefault(); switchView('RequestsLogs'); });
+    if (navSettings) navSettings.addEventListener('click', (e) => { e.preventDefault(); switchView('Settings'); });
+
+    // --- Other Event Listeners ---
+    if (currentUser.role === 'requester') {
         btnNewRequest.addEventListener('click', openModal);
-        if (navReportIssue) {
-            navReportIssue.addEventListener('click', (e) => {
+        if (navNewRequest) {
+            navNewRequest.addEventListener('click', (e) => {
                 e.preventDefault();
                 openModal();
             });
@@ -264,10 +377,10 @@ document.addEventListener('DOMContentLoaded', () => {
             saveTickets();
             
             myTickets = tickets.filter(t => t.author === currentUser.email);
-            visibleTickets = [...myTickets]; // reset search
-            if(searchInput) searchInput.value = '';
             
-            renderTable();
+            // Switch back to "My Requests" to show the new ticket
+            switchView('MyRequests');
+            
             hideModal();
             showToast('🚀 Ticket successfully reported!');
         });
@@ -281,5 +394,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Initial Render ---
-    renderTable();
+    switchView('Dashboard');
 });
