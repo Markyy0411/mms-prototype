@@ -720,3 +720,78 @@ body.dark-mode input, body.dark-mode select {
 .modal-box input {
     width: 100%; padding: 10px; margin: 15px 0; border: 1px solid var(--border-color); border-radius: 4px;
 }
+
+/* =========================================
+   MOBILE RESPONSIVENESS
+   ========================================= */
+@media (max-width: 768px) {
+    .dashboard-body {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        padding: 0.5rem;
+        order: 2;
+        z-index: 100;
+        position: fixed;
+        bottom: 0;
+        height: auto;
+        flex-direction: row;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+    }
+    .sidebar-header {
+        display: none;
+    }
+    .nav-links {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        margin: 0;
+        padding: 0;
+        gap: 5px;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+    }
+    .nav-links li {
+        margin-bottom: 0;
+    }
+    .nav-links a {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+    .nav-links a.logout {
+        margin-top: 0;
+        margin-left: auto;
+    }
+    .main-content {
+        padding: 1rem;
+        padding-bottom: 80px;
+        overflow-y: auto;
+    }
+    .top-nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .dashboard-top-section {
+        flex-direction: column;
+    }
+    .stats-cards {
+        grid-template-columns: 1fr;
+    }
+    .table-container {
+        overflow-x: auto;
+    }
+    table {
+        min-width: 600px;
+    }
+    .login-box {
+        width: 95%;
+        padding: 2rem;
+    }
+    .chart-section {
+        max-height: 300px;
+    }
+}

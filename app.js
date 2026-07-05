@@ -4,9 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value.trim().toLowerCase();
+        const handleLogin = (e) => {
+            if (e) e.preventDefault();
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            if (!emailInput.checkValidity() || !passwordInput.checkValidity()) return;
+            
+            const email = emailInput.value.trim().toLowerCase();
             const role = document.getElementById('role').value;
             
             // Save current user session
@@ -19,7 +23,27 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 window.location.href = 'requester.html';
             }
-        });
+        };
+
+        loginForm.addEventListener('submit', handleLogin);
+
+        // Auto login when done typing password
+        const passwordInput = document.getElementById('password');
+        const emailInput = document.getElementById('email');
+        let typingTimer;
+        const doneTypingInterval = 800; // 800ms delay after typing
+        
+        if (passwordInput && emailInput) {
+            passwordInput.addEventListener('input', () => {
+                clearTimeout(typingTimer);
+                if (passwordInput.value.length >= 6 && emailInput.value.includes('@')) {
+                    typingTimer = setTimeout(() => {
+                        handleLogin();
+                    }, doneTypingInterval);
+                }
+            });
+        }
+
         return; // Stop execution on login page
     }
 
