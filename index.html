@@ -17,8 +17,15 @@
             
             <form id="loginForm">
                 <div class="input-group">
+                    <label for="role">Login As</label>
+                    <select id="role" name="role" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Inter', sans-serif;">
+                        <option value="requester">Requester (Student/Faculty)</option>
+                        <option value="fms">Facility Management Staff (FMS)</option>
+                    </select>
+                </div>
+                <div class="input-group">
                     <label for="email">University Email</label>
-                    <input type="email" id="email" name="email" placeholder="requester@baliuagu.edu.ph" required>
+                    <input type="email" id="email" name="email" placeholder="user@baliuagu.edu.ph" required>
                 </div>
                 <div class="input-group">
                     <label for="password">Password</label>

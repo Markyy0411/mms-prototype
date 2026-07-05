@@ -7,30 +7,25 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value.trim().toLowerCase();
-            
-            // Determine Role
-            let role = 'requester';
-            if (email === 'fms@baliuagu.edu.ph') {
-                role = 'fms';
-            }
+            const role = document.getElementById('role').value;
             
             // Save current user session
             const currentUser = { email: email, role: role };
             localStorage.setItem('mms_currentUser', JSON.stringify(currentUser));
             
             // Redirect
-            window.location.href = 'dashboard.html';
+            if (role === 'fms') {
+                window.location.href = 'fms.html';
+            } else {
+                window.location.href = 'requester.html';
+            }
         });
         return; // Stop execution on login page
     }
 
     // ==========================================
-    // DASHBOARD PAGE LOGIC
+    // CHECK AUTHENTICATION FOR PORTALS
     // ==========================================
-    const ticketTableBody = document.getElementById('ticketTableBody');
-    if (!ticketTableBody) return; // Failsafe
-
-    // Check Authentication
     const userJson = localStorage.getItem('mms_currentUser');
     if (!userJson) {
         window.location.href = 'index.html'; // Not logged in
@@ -38,11 +33,28 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const currentUser = JSON.parse(userJson);
 
-    // --- Data Management (Local Storage) ---
+    // Set Welcome Name / Email
+    const welcomeName = document.getElementById('welcomeName');
+    if (welcomeName) {
+        if (currentUser.role === 'fms') {
+            welcomeName.textContent = 'FMS Team';
+        } else {
+            welcomeName.textContent = currentUser.email.split('@')[0];
+        }
+    }
+    
+    const setProfileEmail = document.getElementById('setProfileEmail');
+    if (setProfileEmail) {
+        setProfileEmail.value = currentUser.email;
+    }
+
+    // ==========================================
+    // DATA MANAGEMENT (Mock Database)
+    // ==========================================
     if (!localStorage.getItem('mms_tickets')) {
         const defaultTickets = [
             { id: 'TKT-1001', priority: 'Medium', category: 'Electrical', location: 'IT Bldg, Rm 304', status: 'Pending', date: '2023-11-20', author: 'requester@baliuagu.edu.ph' },
-            { id: 'TKT-1002', priority: 'Urgent', category: 'Plumbing', location: 'Main Bldg, CR 1', status: 'Resolved', date: '2023-11-18', author: 'mark@baliuagu.edu.ph' },
+            { id: 'TKT-1002', priority: 'Urgent', category: 'Plumbing', location: 'Main Bldg, CR 1', status: 'Resolved', date: '2023-11-18', author: 'faculty@baliuagu.edu.ph' },
             { id: 'TKT-1003', priority: 'Low', category: 'IT / Network', location: 'Library', status: 'Pending', date: '2023-11-21', author: 'requester@baliuagu.edu.ph' }
         ];
         localStorage.setItem('mms_tickets', JSON.stringify(defaultTickets));
@@ -50,320 +62,287 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let tickets = JSON.parse(localStorage.getItem('mms_tickets'));
     const saveTickets = () => localStorage.setItem('mms_tickets', JSON.stringify(tickets));
-
-    // --- DOM Elements ---
-    const btnNewRequest = document.getElementById('btnNewRequest');
-    const modal = document.getElementById('reportModal');
-    const closeModal = document.getElementById('closeModal');
-    const cancelModal = document.getElementById('cancelModal');
-    const reportForm = document.getElementById('reportForm');
-    const fileUpload = document.querySelector('.file-upload');
-    const fileInput = document.getElementById('attachment');
     
-    const searchInput = document.getElementById('searchInput');
+    // Toast Notification
     const toast = document.getElementById('toast');
-
-    const statTotal = document.getElementById('statTotal');
-    const statPending = document.getElementById('statPending');
-    const statResolved = document.getElementById('statResolved');
-    
-    const welcomeName = document.getElementById('welcomeName');
-    const actionHeader = document.getElementById('actionHeader');
-
-    // Section Elements for SPA Routing
-    const dashboardTopSection = document.getElementById('dashboardTopSection');
-    const ticketSection = document.getElementById('ticketSection');
-    const settingsSection = document.getElementById('settingsSection');
-    const ticketSectionTitle = document.getElementById('ticketSectionTitle');
-
-    // Nav Links
-    const navDashboard = document.getElementById('navDashboard');
-    const navNewRequest = document.getElementById('navNewRequest');
-    const navMyRequests = document.getElementById('navMyRequests');
-    const navPendingRequests = document.getElementById('navPendingRequests');
-    const navRequestsLogs = document.getElementById('navRequestsLogs');
-    const navSettings = document.getElementById('navSettings');
-
-    // --- Role-Based Setup ---
-    let myTickets = [];
-    if (currentUser.role === 'fms') {
-        welcomeName.textContent = 'FMS';
-        btnNewRequest.style.display = 'none';
-        actionHeader.style.display = 'table-cell';
-        myTickets = tickets;
-
-        // Show FMS Sidebar Links
-        document.getElementById('liPendingRequests').style.display = 'block';
-        document.getElementById('liRequestsLogs').style.display = 'block';
-    } else {
-        welcomeName.textContent = currentUser.email.split('@')[0];
-        actionHeader.style.display = 'none';
-        myTickets = tickets.filter(t => t.author === currentUser.email);
-
-        // Show Requester Sidebar Links
-        document.getElementById('liNewRequest').style.display = 'block';
-        document.getElementById('liMyRequests').style.display = 'block';
-    }
-
-    // Default visible tickets
-    let visibleTickets = [...myTickets];
-    let currentView = 'Dashboard';
-
-    // --- Advanced Features ---
-    let issueChartInstance = null;
-
     const showToast = (message) => {
+        if (!toast) return;
         toast.textContent = message;
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 3000);
     };
 
-    const updateChart = () => {
-        const ctx = document.getElementById('issueChart');
-        if (!ctx) return;
-
-        // Aggregate data based on myTickets (all relevant tickets for the role)
-        const categoryCounts = {};
-        myTickets.forEach(t => {
-            categoryCounts[t.category] = (categoryCounts[t.category] || 0) + 1;
+    // ==========================================
+    // THEME TOGGLE LOGIC
+    // ==========================================
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const isDarkMode = localStorage.getItem('mms_theme') === 'dark';
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        if (themeToggleBtn) themeToggleBtn.textContent = '☀️';
+    }
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('mms_theme', 'dark');
+                themeToggleBtn.textContent = '☀️';
+            } else {
+                localStorage.setItem('mms_theme', 'light');
+                themeToggleBtn.textContent = '🌙';
+            }
+            if (window.fullCalendarInstance) window.fullCalendarInstance.render();
         });
+    }
 
-        const labels = Object.keys(categoryCounts);
-        const data = Object.values(categoryCounts);
+    // ==========================================
+    // FULLCALENDAR INIT LOGIC
+    // ==========================================
+    const initCalendar = () => {
+        const calendarEl = document.getElementById('calendar');
+        if (calendarEl && window.FullCalendar && !window.fullCalendarInstance) {
+            const calendarEvents = tickets.map(t => ({
+                title: `${t.id} - ${t.category}`,
+                start: t.date,
+                color: t.status === 'Resolved' ? '#16a34a' : (t.status === 'Pending' ? '#f59e0b' : '#3b82f6')
+            }));
 
-        if (issueChartInstance) {
-            issueChartInstance.destroy();
-        }
-
-        issueChartInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: ['#005a30', '#f4c430', '#f39c12', '#3498db', '#95a5a6'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'right' }
+            window.fullCalendarInstance = new window.FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: calendarEvents,
+                height: 500,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 }
+            });
+            window.fullCalendarInstance.render();
+        } else if (window.fullCalendarInstance) {
+            window.fullCalendarInstance.render(); // Ensure sizing is correct when tab opens
+        }
+    };
+
+    // ==========================================
+    // SPA ROUTING LOGIC
+    // ==========================================
+    const navLinks = document.querySelectorAll('.nav-links li a');
+    const spaViews = document.querySelectorAll('.spa-view');
+
+    navLinks.forEach(link => {
+        if (link.id === 'navLogout' || !link.id) return;
+        
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Remove active from all nav items
+            document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('active'));
+            link.parentElement.classList.add('active');
+            
+            // Hide all views
+            spaViews.forEach(view => {
+                view.classList.remove('active-view');
+                view.style.display = 'none';
+            });
+            
+            // Determine target view ID (e.g. navDashboard -> viewDashboard)
+            const targetViewId = link.id.replace('nav', 'view');
+            const targetView = document.getElementById(targetViewId);
+            
+            if (targetView) {
+                targetView.classList.add('active-view');
+                targetView.style.display = 'block';
+            }
+            
+            // Re-render tables if necessary when switching views
+            renderTables();
+
+            // Initialize/Render Calendar if calendar tab is selected
+            if (link.id === 'navCalendar') {
+                setTimeout(initCalendar, 100); // slight delay to ensure div is visible
             }
         });
-    };
+    });
 
-    // --- Functions ---
-    const updateStats = () => {
-        statTotal.textContent = myTickets.length;
-        statPending.textContent = myTickets.filter(t => t.status === 'Pending').length;
-        statResolved.textContent = myTickets.filter(t => t.status === 'Resolved').length;
-    };
+    // ==========================================
+    // LOGOUT MODAL LOGIC
+    // ==========================================
+    const logoutBtn = document.getElementById('navLogout');
+    const logoutModal = document.getElementById('logoutModal');
+    const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+    const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+    const logoutConfirmInput = document.getElementById('logoutConfirmInput');
 
-    const renderTable = () => {
-        ticketTableBody.innerHTML = '';
-        const sortedTickets = [...visibleTickets].reverse(); // Newest first
+    if (logoutBtn && logoutModal) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            logoutModal.classList.add('active');
+            logoutConfirmInput.value = '';
+            confirmLogoutBtn.disabled = true;
+        });
+
+        cancelLogoutBtn.addEventListener('click', () => {
+            logoutModal.classList.remove('active');
+        });
+
+        logoutConfirmInput.addEventListener('input', (e) => {
+            if (e.target.value.trim().toLowerCase() === 'logout') {
+                confirmLogoutBtn.disabled = false;
+            } else {
+                confirmLogoutBtn.disabled = true;
+            }
+        });
+
+        confirmLogoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('mms_currentUser');
+            window.location.href = 'index.html';
+        });
+    }
+
+    // ==========================================
+    // TABLE RENDERING LOGIC
+    // ==========================================
+    const renderTables = () => {
+        const sortedTickets = [...tickets].reverse(); // Newest first
         
-        if (sortedTickets.length === 0) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td colspan="${currentUser.role === 'fms' ? 7 : 6}" style="text-align: center; color: #64746b; padding: 20px;">No tickets found.</td>`;
-            ticketTableBody.appendChild(tr);
-        } else {
-            sortedTickets.forEach(ticket => {
+        // 1. DASHBOARD TABLE (Requester - their tickets, FMS - all tickets)
+        const dashTable = document.getElementById('dashboardTableBody');
+        if (dashTable) {
+            dashTable.innerHTML = '';
+            let dashData = currentUser.role === 'fms' ? sortedTickets : sortedTickets.filter(t => t.author === currentUser.email);
+            // Just show top 5 recent
+            dashData.slice(0, 5).forEach(ticket => {
                 const tr = document.createElement('tr');
-                
-                // Priority badge logic
-                const pClass = ticket.priority ? ticket.priority.toLowerCase() : 'medium';
-                const priorityBadge = `<span class="badge ${pClass}">${ticket.priority || 'Medium'}</span>`;
-
-                let html = `
-                    <td class="ticket-id">${ticket.id}</td>
+                const pClass = ticket.priority.toLowerCase();
+                const priorityBadge = `<span class="badge ${pClass}">${ticket.priority}</span>`;
+                tr.innerHTML = `
+                    <td>${ticket.id}</td>
                     <td>${priorityBadge}</td>
                     <td>${ticket.category}</td>
                     <td>${ticket.location}</td>
                     <td><span class="badge ${ticket.status.toLowerCase()}">${ticket.status}</span></td>
                     <td>${ticket.date}</td>
                 `;
-                
-                if (currentUser.role === 'fms') {
-                    const isPending = ticket.status === 'Pending';
-                    html += `
-                        <td>
-                            <button class="btn-resolve" onclick="resolveTicket('${ticket.id}')" ${!isPending ? 'disabled' : ''}>
-                                ${isPending ? 'Resolve' : 'Done'}
-                            </button>
-                        </td>
-                    `;
-                }
-                
-                tr.innerHTML = html;
-                ticketTableBody.appendChild(tr);
+                dashTable.appendChild(tr);
             });
         }
-        
-        updateStats();
-        updateChart();
-    };
 
-    // --- SPA View Routing Logic ---
-    const navLinksList = document.querySelectorAll('.nav-links li');
-    const setActiveNav = (liId) => {
-        navLinksList.forEach(li => li.classList.remove('active'));
-        const li = document.getElementById(liId);
-        if (li) li.classList.add('active');
-    };
-
-    const switchView = (viewName) => {
-        currentView = viewName;
-        if (searchInput) searchInput.value = ''; // Reset Search
-
-        if (viewName === 'Dashboard') {
-            dashboardTopSection.style.display = 'flex';
-            ticketSection.style.display = 'block';
-            settingsSection.style.display = 'none';
-            setActiveNav('liDashboard');
-            
-            if (currentUser.role === 'fms') {
-                ticketSectionTitle.textContent = 'High Priority Requests (Urgent)';
-                visibleTickets = myTickets.filter(t => t.priority === 'Urgent');
-            } else {
-                ticketSectionTitle.textContent = 'Recent Maintenance Requests';
-                visibleTickets = [...myTickets];
-            }
-        } 
-        else if (viewName === 'MyRequests') {
-            dashboardTopSection.style.display = 'none';
-            ticketSection.style.display = 'block';
-            settingsSection.style.display = 'none';
-            setActiveNav('liMyRequests');
-            ticketSectionTitle.textContent = 'My Sent Requests';
-            visibleTickets = [...myTickets];
-        } 
-        else if (viewName === 'PendingRequests') {
-            dashboardTopSection.style.display = 'none';
-            ticketSection.style.display = 'block';
-            settingsSection.style.display = 'none';
-            setActiveNav('liPendingRequests');
-            ticketSectionTitle.textContent = 'Pending Requests (Action Required)';
-            visibleTickets = myTickets.filter(t => t.status === 'Pending');
-        } 
-        else if (viewName === 'RequestsLogs') {
-            dashboardTopSection.style.display = 'none';
-            ticketSection.style.display = 'block';
-            settingsSection.style.display = 'none';
-            setActiveNav('liRequestsLogs');
-            ticketSectionTitle.textContent = 'All Requests Logs';
-            visibleTickets = [...myTickets];
-        } 
-        else if (viewName === 'Settings') {
-            dashboardTopSection.style.display = 'none';
-            ticketSection.style.display = 'none';
-            settingsSection.style.display = 'block';
-            setActiveNav('liSettings');
-            
-            document.getElementById('profileEmail').textContent = currentUser.email;
-            document.getElementById('profileRole').textContent = currentUser.role === 'fms' ? 'Facility Maintenance Service (FMS)' : 'Requester';
+        // 2. REQUESTER: UNPROCESSED TICKETS
+        const unprocTable = document.getElementById('unprocessedTableBody');
+        if (unprocTable) {
+            unprocTable.innerHTML = '';
+            const unprocData = sortedTickets.filter(t => t.author === currentUser.email && t.status === 'Pending');
+            unprocData.forEach(ticket => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${ticket.id}</td>
+                    <td>${ticket.category}</td>
+                    <td>${ticket.location}</td>
+                    <td><button class="btn-primary" style="padding: 5px 10px; font-size: 0.8rem; background: #f59e0b; border: none; color: white; cursor:pointer;" onclick="alert('Edit feature coming soon!')">Edit</button></td>
+                `;
+                unprocTable.appendChild(tr);
+            });
         }
-        
-        if (viewName !== 'Settings') {
-            renderTable();
+
+        // 3. REQUESTER: MY REQUESTS
+        const myReqTable = document.getElementById('myRequestsTableBody');
+        if (myReqTable) {
+            myReqTable.innerHTML = '';
+            const myReqData = sortedTickets.filter(t => t.author === currentUser.email);
+            myReqData.forEach(ticket => {
+                const tr = document.createElement('tr');
+                const pClass = ticket.priority.toLowerCase();
+                tr.innerHTML = `
+                    <td>${ticket.id}</td>
+                    <td><span class="badge ${pClass}">${ticket.priority}</span></td>
+                    <td>${ticket.category}</td>
+                    <td>${ticket.location}</td>
+                    <td><span class="badge ${ticket.status.toLowerCase()}">${ticket.status}</span></td>
+                    <td>${ticket.date}</td>
+                `;
+                myReqTable.appendChild(tr);
+            });
         }
+
+        // 4. FMS: PENDING REQUESTS
+        const pendingTable = document.getElementById('pendingRequestsTableBody');
+        if (pendingTable) {
+            pendingTable.innerHTML = '';
+            const pendingData = sortedTickets.filter(t => t.status === 'Pending');
+            pendingData.forEach(ticket => {
+                const tr = document.createElement('tr');
+                const pClass = ticket.priority.toLowerCase();
+                tr.innerHTML = `
+                    <td>${ticket.id}</td>
+                    <td><span class="badge ${pClass}">${ticket.priority}</span></td>
+                    <td>${ticket.category}</td>
+                    <td>${ticket.location}</td>
+                    <td>${ticket.author.split('@')[0]}</td>
+                    <td><button class="btn-primary" style="padding: 5px 10px; font-size: 0.8rem; background: #16a34a; border: none; color: white; cursor:pointer;" onclick="window.resolveTicket('${ticket.id}')">Mark Resolved</button></td>
+                `;
+                pendingTable.appendChild(tr);
+            });
+        }
+
+        // 5. FMS: REQUEST LOGS
+        const logsTable = document.getElementById('requestsLogsTableBody');
+        if (logsTable) {
+            logsTable.innerHTML = '';
+            sortedTickets.forEach(ticket => {
+                const tr = document.createElement('tr');
+                const pClass = ticket.priority.toLowerCase();
+                tr.innerHTML = `
+                    <td>${ticket.id}</td>
+                    <td><span class="badge ${pClass}">${ticket.priority}</span></td>
+                    <td>${ticket.category}</td>
+                    <td>${ticket.location}</td>
+                    <td><span class="badge ${ticket.status.toLowerCase()}">${ticket.status}</span></td>
+                    <td>${ticket.date}</td>
+                    <td><button class="btn-primary" style="padding: 5px 10px; font-size: 0.8rem; background: #64748b; border: none; color: white; cursor:pointer;" onclick="alert('View details coming soon!')">View</button></td>
+                `;
+                logsTable.appendChild(tr);
+            });
+        }
+
+        // UPDATE STATS
+        const myData = currentUser.role === 'fms' ? tickets : tickets.filter(t => t.author === currentUser.email);
+        const statTotal = document.getElementById('statTotal');
+        const statPending = document.getElementById('statPending');
+        const statResolved = document.getElementById('statResolved');
+        
+        if (statTotal) statTotal.textContent = myData.length;
+        if (statPending) statPending.textContent = myData.filter(t => t.status === 'Pending').length;
+        if (statResolved) statResolved.textContent = myData.filter(t => t.status === 'Resolved').length;
     };
 
-    // Global function for onclick handler
+    // Global Resolve Function for FMS
     window.resolveTicket = (ticketId) => {
-        const ticketIndex = tickets.findIndex(t => t.id === ticketId);
-        if (ticketIndex > -1) {
-            tickets[ticketIndex].status = 'Resolved';
+        const idx = tickets.findIndex(t => t.id === ticketId);
+        if (idx > -1) {
+            tickets[idx].status = 'Resolved';
             saveTickets();
-            
-            myTickets = currentUser.role === 'fms' ? tickets : tickets.filter(t => t.author === currentUser.email);
-            
-            // Re-apply current view filter
-            switchView(currentView);
-            
-            // Apply search term if any
-            const searchTerm = searchInput.value.toLowerCase();
-            if(searchTerm) {
-                 visibleTickets = visibleTickets.filter(t => t.location.toLowerCase().includes(searchTerm) || t.category.toLowerCase().includes(searchTerm));
-                 renderTable();
-            }
-            
+            renderTables();
             showToast('✅ Ticket marked as Resolved!');
         }
     };
 
-    const openModal = () => modal.classList.add('active');
-    const hideModal = () => {
-        modal.classList.remove('active');
-        reportForm.reset();
-    };
-
-    // --- Search Logic ---
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            
-            // First apply the base filter of the current view
-            let baseTickets = [];
-            if (currentView === 'PendingRequests') baseTickets = myTickets.filter(t => t.status === 'Pending');
-            else if (currentView === 'Dashboard' && currentUser.role === 'fms') baseTickets = myTickets.filter(t => t.priority === 'Urgent');
-            else baseTickets = [...myTickets];
-
-            visibleTickets = baseTickets.filter(ticket => 
-                ticket.location.toLowerCase().includes(term) || 
-                ticket.category.toLowerCase().includes(term) ||
-                ticket.id.toLowerCase().includes(term) ||
-                (ticket.priority && ticket.priority.toLowerCase().includes(term))
-            );
-            renderTable();
-        });
-    }
-
-    // --- Sidebar Navigation Event Listeners ---
-    if (navDashboard) navDashboard.addEventListener('click', (e) => { e.preventDefault(); switchView('Dashboard'); });
-    if (navMyRequests) navMyRequests.addEventListener('click', (e) => { e.preventDefault(); switchView('MyRequests'); });
-    if (navPendingRequests) navPendingRequests.addEventListener('click', (e) => { e.preventDefault(); switchView('PendingRequests'); });
-    if (navRequestsLogs) navRequestsLogs.addEventListener('click', (e) => { e.preventDefault(); switchView('RequestsLogs'); });
-    if (navSettings) navSettings.addEventListener('click', (e) => { e.preventDefault(); switchView('Settings'); });
-
-    // --- Other Event Listeners ---
-    if (currentUser.role === 'requester') {
-        btnNewRequest.addEventListener('click', openModal);
-        if (navNewRequest) {
-            navNewRequest.addEventListener('click', (e) => {
-                e.preventDefault();
-                openModal();
-            });
-        }
-    }
-
-    closeModal.addEventListener('click', hideModal);
-    cancelModal.addEventListener('click', hideModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) hideModal();
-    });
-
-    if (fileUpload && fileInput) {
-        fileUpload.addEventListener('click', () => fileInput.click());
-    }
-
-    // Form Submission
-    if (reportForm) {
-        reportForm.addEventListener('submit', (e) => {
+    // ==========================================
+    // NEW REQUEST FORM (REQUESTER)
+    // ==========================================
+    const newRequestForm = document.getElementById('newRequestForm');
+    if (newRequestForm) {
+        newRequestForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
-            const category = document.getElementById('category').value;
-            const location = document.getElementById('location').value;
-            const priority = document.getElementById('priority') ? document.getElementById('priority').value : 'Medium';
+            const category = document.getElementById('reqCategory').value;
+            const location = document.getElementById('reqLocation').value;
+            const priority = document.getElementById('reqPriority').value;
             
             const newIdNum = tickets.length > 0 ? parseInt(tickets[tickets.length - 1].id.split('-')[1]) + 1 : 1001;
             const newId = `TKT-${newIdNum}`;
             const today = new Date().toISOString().split('T')[0];
             
-            const newTicket = {
+            tickets.push({
                 id: newId,
                 priority: priority,
                 category: category,
@@ -371,28 +350,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 status: 'Pending',
                 date: today,
                 author: currentUser.email
-            };
+            });
             
-            tickets.push(newTicket);
             saveTickets();
+            renderTables();
+            showToast('🚀 Request successfully submitted!');
+            newRequestForm.reset();
             
-            myTickets = tickets.filter(t => t.author === currentUser.email);
-            
-            // Switch back to "My Requests" to show the new ticket
-            switchView('MyRequests');
-            
-            hideModal();
-            showToast('🚀 Ticket successfully reported!');
+            // Switch to My Requests Tab
+            document.getElementById('navMyRequests').click();
         });
     }
 
-    const logoutBtn = document.querySelector('.logout');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('mms_currentUser');
-        });
-    }
-
-    // --- Initial Render ---
-    switchView('Dashboard');
+    // Initial render
+    renderTables();
 });

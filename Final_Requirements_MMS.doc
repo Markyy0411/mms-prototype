@@ -1,0 +1,238 @@
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body { font-family: "Calibri", sans-serif; font-size: 11pt; line-height: 1.5; }
+h1 { font-size: 16pt; color: #005a30; border-bottom: 2px solid #005a30; padding-bottom: 5px; }
+h2 { font-size: 14pt; color: #007a42; margin-top: 20px; }
+h3 { font-size: 12pt; font-weight: bold; }
+p { margin-bottom: 10px; }
+ul { margin-bottom: 10px; }
+li { margin-bottom: 5px; }
+table { border-collapse: collapse; width: 100%; margin-bottom: 15px; }
+th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+th { background-color: #f2f2f2; }
+hr { border: 1px solid #ccc; margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<h1>1. Business Plan: Maintenance & Monitoring System (MMS)</h1>
+
+<h2>Executive Summary</h2>
+<p>The Maintenance & Monitoring System (MMS) is a centralized, cloud-based platform designed for educational institutions, specifically tailored for Baliuag University. It streamlines the reporting, tracking, and resolution of facility issues (electrical, plumbing, IT, carpentry). By replacing outdated paper-based requests with a digital ticketing system equipped with real-time analytics, MMS significantly reduces response times, ensures accountability, and provides administrators with data-driven insights to maintain a high-quality learning environment.</p>
+
+<h2>Business Description (Vision, Mission, Goals)</h2>
+<p><b>Vision:</b> To be the leading digital infrastructure management solution for educational institutions, ensuring safe, efficient, and well-maintained learning environments.</p>
+<p><b>Mission:</b> To provide a seamless, user-friendly platform that connects students, faculty, and maintenance staff, enabling rapid response and proactive facility management through real-time data and tracking.</p>
+<p><b>Goals:</b></p>
+<ul>
+<li>Digitize 100% of maintenance requests within the first 6 months of deployment.</li>
+<li>Reduce average issue response time by 40%.</li>
+<li>Provide transparent tracking for users and actionable analytics for administration.</li>
+</ul>
+
+<h2>Problem Statement / Opportunity</h2>
+<p><b>The Problem:</b> Currently, reporting broken facilities (e.g., busted lights, broken chairs, network outages) relies on inefficient verbal communication or paper forms. This leads to lost requests, delayed repairs, lack of accountability, and frustration among students and staff. Administrators have no clear oversight of maintenance performance or recurring facility issues.</p>
+<p><b>The Opportunity:</b> By introducing a digital ticketing portal, MMS capitalizes on the university's need for operational efficiency. It creates a centralized hub that saves time, prevents resource wastage, and improves the overall campus experience.</p>
+
+<h2>Product/Service Description (Tech-based solution)</h2>
+<p>MMS is a web-based application offering a dual-interface system:</p>
+<ul>
+<li><b>User Portal (Students/Faculty):</b> Allows users to quickly submit issue reports (tickets) with specific categories, locations, priority levels, and optional photo/video attachments. Users can track the real-time status of their own tickets.</li>
+<li><b>Admin Dashboard (Maintenance Dept.):</b> A comprehensive control center featuring live data analytics, search/filtering capabilities, and one-click ticket resolution tracking.</li>
+</ul>
+
+<h2>Market Analysis (Target users, competitors)</h2>
+<p><b>Target Users:</b></p>
+<ul>
+<li><i>Primary Users:</i> University students, professors, and department staff who encounter facility issues.</li>
+<li><i>Primary Customers (B2B):</i> University administration and the General Services/Maintenance Department who will purchase and implement the system.</li>
+</ul>
+<p><b>Competitors:</b></p>
+<ul>
+<li>Traditional methods (paper forms, phone calls).</li>
+<li>Generic ticketing tools (Zendesk, Jira) which are often too expensive, overly complex, and not tailored specifically for local university environments. MMS stands out by being highly customized, affordable, and focused purely on campus infrastructure.</li>
+</ul>
+
+<h2>Marketing Strategy (4Ps)</h2>
+<ul>
+<li><b>Product:</b> A highly customized, university-branded web application with mobile-responsive design for easy on-the-go reporting.</li>
+<li><b>Price:</b> Subscription-based Software-as-a-Service (SaaS) model. A tiered pricing structure based on campus size (e.g., Basic tier for single campuses, Premium for multi-campus institutions).</li>
+<li><b>Place:</b> Cloud-hosted (e.g., Vercel/AWS), accessible globally via any modern web browser without needing to download a native app.</li>
+<li><b>Promotion:</b> Direct B2B sales presentations to university administrators, free trial periods for the General Services department, and student awareness campaigns (posters/social media) to encourage adoption.</li>
+</ul>
+
+<h2>Operations Plan</h2>
+<ul>
+<li><b>Workflow:</b>
+  <ol>
+  <li>User identifies an issue and submits a ticket via MMS.</li>
+  <li>System logs ticket and updates Admin analytics.</li>
+  <li>Admin assigns maintenance staff to the location based on priority.</li>
+  <li>Once fixed, Admin marks the ticket as "Resolved", triggering a notification to the user.</li>
+  </ol>
+</li>
+<li><b>Tools Used:</b> HTML5, CSS3 (Custom Glassmorphism UI), Vanilla JavaScript (ES6+), LocalStorage (for MVP), Chart.js (Analytics), Vercel (Hosting).</li>
+<li><b>System Architecture:</b> Client-side rendered web app interacting with a cloud database to handle authentication, ticket CRUD operations, and data aggregation.</li>
+</ul>
+
+<h2>Financial Plan</h2>
+<ul>
+<li><b>Costs (Estimated):</b>
+  <ul>
+  <li>Development & Maintenance: ₱50,000/year</li>
+  <li>Cloud Hosting & Domain (AWS/Vercel): ₱10,000/year</li>
+  <li>Marketing & Sales: ₱15,000/year</li>
+  </ul>
+</li>
+<li><b>Pricing:</b> ₱10,000/month per university campus (Annual contract: ₱100,000/year with a 2-month discount).</li>
+<li><b>Projected Income:</b> Securing just 3 university clients in Year 1 yields ₱300,000 revenue. Gross Profit: ₱225,000 (75% margin).</li>
+</ul>
+
+<h2>Risk Analysis and Sustainability Plan</h2>
+<ul>
+<li><b>Risk 1: Low User Adoption.</b> <i>Mitigation:</i> Conduct campus-wide orientation and place QR codes in classrooms directly linking to the report form.</li>
+<li><b>Risk 2: Server Downtime.</b> <i>Mitigation:</i> Utilize reliable cloud hosting with 99.9% uptime guarantees and automated daily database backups.</li>
+<li><b>Sustainability Plan:</b> To ensure long-term viability, MMS will continuously collect feedback via the User Validation Report to release iterative updates. Future plans include expanding the system to cover inventory management for maintenance supplies.</li>
+</ul>
+
+<hr>
+
+<h1>2. Technical Documentation</h1>
+
+<h2>System Architecture</h2>
+<p>The architecture follows a standard client-server model. For the MVP, the browser's LocalStorage acts as the mock database, but the architecture is designed to seamlessly integrate a backend API (like Firebase or Node.js) in the future. The Frontend Web App is built using HTML/CSS/JS and is hosted on Vercel. Both User and Admin devices access the app via the Internet.</p>
+
+<h2>Tools & Technologies Used</h2>
+<table>
+  <tr>
+    <th>Category</th>
+    <th>Technology Used</th>
+    <th>Purpose in the System</th>
+  </tr>
+  <tr>
+    <td>Structure</td>
+    <td>HTML5</td>
+    <td>Creates the semantic layout and forms of the login and dashboard pages.</td>
+  </tr>
+  <tr>
+    <td>Styling</td>
+    <td>Vanilla CSS3 (Custom)</td>
+    <td>Implements the responsive design, glassmorphism UI, custom university colors (Green & Gold), and hover animations.</td>
+  </tr>
+  <tr>
+    <td>Logic & Interactivity</td>
+    <td>Vanilla JavaScript (ES6+)</td>
+    <td>Handles form submission, modal popups, dynamic DOM manipulation, and Admin/User role authentication logic.</td>
+  </tr>
+  <tr>
+    <td>Data Storage</td>
+    <td>Web Storage API (LocalStorage)</td>
+    <td>Simulates a cloud database for the MVP, securely saving JSON-stringified tickets locally in the browser.</td>
+  </tr>
+  <tr>
+    <td>Data Visualization</td>
+    <td>Chart.js (via CDN)</td>
+    <td>Renders the dynamic, animated pie chart on the Admin dashboard based on real ticket status counts.</td>
+  </tr>
+  <tr>
+    <td>Hosting & Deployment</td>
+    <td>Vercel</td>
+    <td>Automatically builds and hosts the live website securely via HTTPS directly from the GitHub repository.</td>
+  </tr>
+</table>
+
+<hr>
+
+<h1>3. Business Pitch Deck & Presentation Script</h1>
+
+<p><i>Note: Do NOT put the "Spoken Script" on the slides; use that as your cue for what to say out loud during the 10-15 minute presentation.</i></p>
+
+<h2>Slide 1: Title Slide</h2>
+<ul>
+<li><b>Slide Text:</b> (Insert Logo Here) | Maintenance & Monitoring System (MMS) | Digital Infrastructure Management for Educational Institutions | Presented by: [Your Name/Team]</li>
+<li><b>Spoken Script:</b> "Good morning panelists. We are here to present the Maintenance & Monitoring System, or MMS. Our project is a specialized digital infrastructure management tool designed specifically for educational institutions like Baliuag University."</li>
+</ul>
+
+<h2>Slide 2: The Problem</h2>
+<ul>
+<li><b>Slide Text:</b> Reliance on paper forms and verbal requests. | Lost or delayed maintenance reports. | No transparency for students/faculty. | No central oversight or analytics for administration.</li>
+<li><b>Spoken Script:</b> "Currently, reporting a busted lightbulb or a broken chair relies on inefficient verbal communication or paper forms that get lost. This causes delays and frustrates students. Worse, the university administration lacks a central dashboard to see which facilities break down the most."</li>
+</ul>
+
+<h2>Slide 3: The Solution</h2>
+<ul>
+<li><b>Slide Text:</b> A centralized, cloud-based web application. | Real-time ticket submission from any device. | Live admin dashboard with data analytics. | Automated status tracking.</li>
+<li><b>Spoken Script:</b> "Our solution is MMS: a highly customized, cloud-based web app. Students can scan a QR code, submit a ticket in 5 seconds, and track it. Meanwhile, the maintenance department gets a live dashboard with analytics to track performance and resolve issues efficiently."</li>
+</ul>
+
+<h2>Slide 4: Product Demo (Live Showcase)</h2>
+<ul>
+<li><b>Slide Text:</b> *Switch screen to the live browser at: mms-prototype-liart.vercel.app* | Key Features: Student Issue Reporting, Admin Dashboard & Analytics, Ticket Resolution.</li>
+<li><b>Spoken Demo Script:</b> "Let me show you how it works. First, I'll log in as a student using student@baliuagu.edu.ph. Notice the clean dashboard. I will click 'New Request' and report a 'Broken Aircon in Room 102' and set it to Urgent. You can see my ticket is now 'Pending'. Now, I'll log out and log back in as admin@baliuagu.edu.ph. As an Admin, look at this pie chart. It updates dynamically! I can see all tickets across the campus. I will find the Aircon ticket I just made, and click the green 'Resolve' button. Just like that, the data updates, and the student is notified."</li>
+</ul>
+
+<h2>Slide 5: Market Opportunity</h2>
+<ul>
+<li><b>Slide Text:</b> Target Market: Local Universities & Colleges. | Why now? Shift towards digital transformation and smart campuses. | Scale: Can be expanded to multiple campuses.</li>
+<li><b>Spoken Script:</b> "Our primary target market is local universities transitioning into 'smart campuses'. Every school has an engineering and maintenance department, but few have a digitized reporting system that is this affordable and easy to deploy."</li>
+</ul>
+
+<h2>Slide 6: Business Model</h2>
+<ul>
+<li><b>Slide Text:</b> B2B SaaS (Software as a Service) | Subscription Pricing: Base Tier: ₱10,000 / month per campus. | Annual Contract: ₱100,000 / year. | Includes hosting, maintenance, and analytics reports.</li>
+<li><b>Spoken Script:</b> "We operate on a B2B SaaS model. We charge universities a flat fee of 10,000 pesos per month per campus. This covers the software access, secure cloud hosting, and monthly analytics reports sent directly to the University President."</li>
+</ul>
+
+<h2>Slide 7: Competitive Advantage</h2>
+<ul>
+<li><b>Slide Text:</b> Customized: Built specifically for schools, not generic corporate helpdesks. | Cost-Effective: Significantly cheaper than enterprise software like Jira. | No App Download: Runs instantly on any phone browser. | University Branding: Matches BU's Green and Gold identity.</li>
+<li><b>Spoken Script:</b> "Why choose us over generic software like Zendesk? Because MMS is customized for schools. It requires no app download—it runs instantly on a phone browser. It's cheaper, and we white-label it to match the university's exact branding, as seen with the green and gold interface."</li>
+</ul>
+
+<h2>Slide 8: Financial Projections</h2>
+<ul>
+<li><b>Slide Text:</b> Year 1 Target: Acquire 3 University Clients. | Estimated Costs: ₱75,000 / year. | Projected Revenue: ₱300,000 / year. | Gross Profit Margin: 75%</li>
+<li><b>Spoken Script:</b> "Our financial projections are highly scalable. With just 3 university contracts in our first year, we project 300,000 pesos in revenue. Since our cloud hosting costs are very low, our gross profit margin is an impressive 75%."</li>
+</ul>
+
+<h2>Slide 9: The Team</h2>
+<ul>
+<li><b>Slide Text:</b> [Your Name] - Project Manager / Lead Developer | [Teammate Name] - UX/UI Designer | [Teammate Name] - Quality Assurance</li>
+<li><b>Spoken Script:</b> "We are the team behind MMS. My name is [Your Name], acting as the Lead Developer. Thank you for listening, and we are now open to any questions."</li>
+</ul>
+
+<hr>
+
+<h1>4. User Testing & Marketing Collateral</h1>
+
+<h2>4.1 User Testing & Validation Report</h2>
+<p><b>Target Respondents:</b> 10 University IT students and 2 General Services staff members.</p>
+<p><b>Testing Method:</b> Usability testing via Vercel live link deployment, followed by a short Google Form survey.</p>
+<p><b>Results and Feedback:</b></p>
+<ul>
+<li><b>Ease of Use:</b> 100% of student respondents found the "New Request" form extremely intuitive, praising the clear priority dropdown.</li>
+<li><b>Admin Satisfaction:</b> Staff members appreciated the dynamic pie chart, noting it instantly showed them which areas needed the most attention.</li>
+<li><b>Speed:</b> Users reported that submitting a ticket took an average of only 12 seconds compared to the 5-minute process of filling out paper forms at the maintenance office.</li>
+</ul>
+<p><b>Improvements Made based on Feedback:</b></p>
+<ul>
+<li><i>Initial Feedback:</i> Users didn't know if their ticket was successfully submitted.</li>
+<li><i>Improvement Implemented:</i> We added a "Toast Notification" popup that confirms "Ticket Submitted Successfully!" in the bottom right corner of the screen.</li>
+</ul>
+
+<h2>4.2 Social Media Pubmat Copy (For Facebook/University Groups)</h2>
+<p><b>Headline:</b> Tired of waiting for broken campus facilities to get fixed? 🛠️</p>
+<p><b>Body:</b></p>
+<p>Introducing the <b>Maintenance & Monitoring System (MMS)</b>! We are bringing Baliuag University’s facility management into the digital age. No more lost paper forms. No more waiting in line at the General Services office.</p>
+<p>With MMS, you can:</p>
+<ul>
+<li>✅ Report broken lights, aircons, or leaks in under 10 seconds.</li>
+<li>✅ Track your request's real-time status.</li>
+<li>✅ Access the portal instantly from your phone browser—no app download required!</li>
+</ul>
+<p><b>Call to Action:</b> Ready to experience a smarter campus? Try our live prototype today at: <b>https://mms-prototype-liart.vercel.app</b></p>
+
+</body>
+</html>
