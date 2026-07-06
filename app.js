@@ -224,10 +224,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
+    // SEARCH FILTER LOGIC
+    // ==========================================
+    let searchQuery = '';
+    const reqSearchInput = document.getElementById('reqSearchInput');
+    if (reqSearchInput) {
+        reqSearchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.toLowerCase();
+            renderTables();
+        });
+    }
+
+    // ==========================================
     // TABLE RENDERING LOGIC
     // ==========================================
     const renderTables = () => {
-        const sortedTickets = [...tickets].reverse(); // Newest first
+        let sortedTickets = [...tickets].reverse(); // Newest first
+        
+        if (searchQuery) {
+            sortedTickets = sortedTickets.filter(t => 
+                t.id.toLowerCase().includes(searchQuery) ||
+                t.category.toLowerCase().includes(searchQuery) ||
+                t.location.toLowerCase().includes(searchQuery) ||
+                t.status.toLowerCase().includes(searchQuery) ||
+                t.author.toLowerCase().includes(searchQuery)
+            );
+        }
         
         // 1. DASHBOARD TABLE (Requester - their tickets, FMS - all tickets)
         const dashTable = document.getElementById('dashboardTableBody');

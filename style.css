@@ -660,25 +660,18 @@ select.input-field {
 }
 
 /* Dark Mode */
-:root {
-    --bg-light: #f8fafc;
-    --bg-card: #ffffff;
-    --text-main: #0f172a;
-    --text-light: #64748b;
-    --border-color: #e2e8f0;
-}
 body.dark-mode {
-    --bg-light: #0f172a;
-    --bg-card: #1e293b;
-    --text-main: #f8fafc;
-    --text-light: #cbd5e1;
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
     --border-color: #334155;
-    background-color: var(--bg-light);
-    color: var(--text-main);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
 }
 body.dark-mode .card, body.dark-mode .sidebar {
-    background-color: var(--bg-card);
-    color: var(--text-main);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
     border-color: var(--border-color);
 }
 body.dark-mode th, body.dark-mode td {
@@ -686,18 +679,23 @@ body.dark-mode th, body.dark-mode td {
 }
 body.dark-mode th {
     background-color: #0f172a;
+    color: var(--text-secondary);
 }
 body.dark-mode .top-nav {
-    background-color: var(--bg-light);
+    background-color: var(--bg-primary);
     border-bottom: 1px solid var(--border-color);
 }
 body.dark-mode .nav-links li a:hover {
     background-color: rgba(255,255,255,0.1);
 }
-body.dark-mode input, body.dark-mode select {
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
     background-color: #0f172a;
     color: white;
     border: 1px solid var(--border-color);
+}
+body.dark-mode .msg-received {
+    background-color: #334155 !important;
+    color: #f8fafc !important;
 }
 
 /* Logout Modal */
